@@ -1,0 +1,713 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS | Command Center</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #050609;
+  color: #e9f3ff;
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+:root {
+  --red: #ff253f;
+  --cyan: #00d9ff;
+  --panel: rgba(15, 20, 30, .88);
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 6%;
+  border-bottom: 1px solid #272d3b;
+  background: #090b10;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.logo {
+  color: var(--red);
+  font-size: 23px;
+  font-weight: bold;
+  letter-spacing: 5px;
+}
+
+.status {
+  color: #00ff91;
+  font-size: 12px;
+}
+
+main {
+  max-width: 1100px;
+  margin: auto;
+  padding: 30px 18px 100px;
+}
+
+.screen {
+  display: none;
+  animation: appear .35s ease;
+}
+
+.screen.active {
+  display: block;
+}
+
+@keyframes appear {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid #263044;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 18px;
+  box-shadow: 0 0 20px rgba(0,217,255,.04);
+}
+
+h2 {
+  font-size: 15px;
+  color: var(--cyan);
+  letter-spacing: 2px;
+  margin-bottom: 18px;
+}
+
+.hero {
+  text-align: center;
+  padding: 45px 10px;
+}
+
+.core {
+  width: 150px;
+  height: 150px;
+  border: 2px solid var(--red);
+  border-radius: 50%;
+  margin: 20px auto 30px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 0 25px var(--red), inset 0 0 25px #ff253f44;
+  animation: pulse 3s infinite;
+  position: relative;
+}
+
+.core::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 1px dashed var(--cyan);
+  border-radius: 50%;
+  animation: rotate 12s linear infinite;
+}
+
+.core span {
+  font-size: 37px;
+  color: var(--red);
+  font-weight: bold;
+}
+
+@keyframes pulse {
+  50% { box-shadow: 0 0 45px var(--red), inset 0 0 30px #ff253f66; }
+}
+
+@keyframes rotate {
+  to { transform: rotate(360deg); }
+}
+
+.hero h1 {
+  font-size: clamp(32px, 8vw, 55px);
+  letter-spacing: 7px;
+  color: white;
+  text-shadow: 0 0 20px var(--cyan);
+}
+
+.hero p {
+  color: #8897aa;
+  margin: 15px 0 25px;
+}
+
+button {
+  cursor: pointer;
+  border: 1px solid var(--cyan);
+  background: transparent;
+  color: var(--cyan);
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  transition: .25s;
+}
+
+button:active {
+  transform: scale(.96);
+}
+
+button:hover {
+  background: var(--cyan);
+  color: #050609;
+  box-shadow: 0 0 15px var(--cyan);
+}
+
+.red-btn {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.red-btn:hover {
+  background: var(--red);
+  box-shadow: 0 0 15px var(--red);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.stat {
+  color: #00ff91;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.clock {
+  font-size: 30px;
+  color: var(--cyan);
+  letter-spacing: 3px;
+  text-align: center;
+  padding: 10px;
+}
+
+.chatbox {
+  height: 330px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.message {
+  padding: 12px;
+  border-radius: 10px;
+  max-width: 85%;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.bot {
+  background: #172334;
+  border-left: 3px solid var(--cyan);
+  align-self: flex-start;
+}
+
+.user {
+  background: #35131c;
+  border-right: 3px solid var(--red);
+  align-self: flex-end;
+}
+
+.input-row {
+  display: flex;
+  gap: 8px;
+}
+
+input {
+  min-width: 0;
+  flex: 1;
+  padding: 13px;
+  border-radius: 8px;
+  border: 1px solid #344155;
+  background: #0a0d14;
+  color: white;
+  outline: none;
+}
+
+input:focus {
+  border-color: var(--cyan);
+}
+
+.game-number {
+  font-size: 35px;
+  color: var(--cyan);
+  text-align: center;
+  margin: 25px;
+}
+
+.game-area {
+  text-align: center;
+}
+
+.game-area input {
+  width: 100%;
+  max-width: 180px;
+  margin: 15px auto;
+}
+
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin: 15px 0;
+  color: #bbc9da;
+}
+
+.bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  background: rgba(5, 7, 12, .97);
+  border-top: 1px solid #263044;
+  padding: 12px 4px;
+  z-index: 20;
+  backdrop-filter: blur(12px);
+}
+
+.nav-btn {
+  border: none;
+  color: #8290a4;
+  padding: 8px 9px;
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.nav-btn.active {
+  color: var(--cyan);
+}
+
+.nav-btn:hover {
+  background: transparent;
+  box-shadow: none;
+  color: var(--cyan);
+}
+
+.nav-icon {
+  font-size: 19px;
+}
+
+footer {
+  text-align: center;
+  color: #647187;
+  font-size: 11px;
+  padding: 20px;
+}
+
+@media(max-width: 500px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  header {
+    padding: 16px;
+  }
+
+  .hero {
+    padding-top: 30px;
+  }
+
+  .logo {
+    font-size: 19px;
+  }
+}
+
+@media(prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">NEXUS.</div>
+  <div class="status">● SYSTEM ONLINE</div>
+</header>
+
+<main>
+
+<!-- HOME -->
+<section id="home" class="screen active">
+
+  <div class="hero">
+    <div class="core"><span>N</span></div>
+
+    <h1>NEXUS</h1>
+    <p>YOUR PERSONAL DIGITAL COMMAND CENTER</p>
+
+    <button class="red-btn" onclick="navigate('chat')">
+      INITIALIZE SYSTEM
+    </button>
+  </div>
+
+  <div class="grid">
+
+    <div class="panel">
+      <h2>SYSTEM STATUS</h2>
+      <p>AI Core <span class="stat">● ONLINE</span></p>
+      <p>Security <span class="stat">● ACTIVE</span></p>
+      <p>Network <span class="stat">● STABLE</span></p>
+    </div>
+
+    <div class="panel">
+      <h2>LOCAL TIME</h2>
+      <div class="clock" id="clock">00:00:00</div>
+      <p style="text-align:center;color:#8290a4" id="date"></p>
+    </div>
+
+  </div>
+
+  <div class="panel">
+    <h2>MISSION CONTROL</h2>
+    <p style="color:#aab6c8;line-height:1.8">
+      Welcome, operator. Your digital environment is ready.
+      Explore the system, play a game, or communicate with
+      your virtual assistant.
+    </p>
+  </div>
+
+</section>
+
+<!-- CHAT -->
+<section id="chat" class="screen">
+
+  <div class="panel">
+    <h2>NEXUS AI INTERFACE</h2>
+
+    <div class="chatbox" id="chatbox">
+      <div class="message bot">
+        NEXUS: Hello, operator. Systems are online.
+        How can I assist you?
+      </div>
+    </div>
+
+    <div class="input-row">
+      <input id="chatInput" placeholder="Enter a command..."
+      onkeydown="if(event.key==='Enter')sendMessage()">
+
+      <button onclick="sendMessage()">SEND</button>
+    </div>
+  </div>
+
+</section>
+
+<!-- GAMES -->
+<section id="games" class="screen">
+
+  <div class="panel game-area">
+    <h2>SECURITY TRAINING GAME</h2>
+
+    <p style="color:#9baabd">
+      Guess the secret number between 1 and 100.
+    </p>
+
+    <div class="game-number">???</div>
+
+    <input id="guessInput" type="number"
+    placeholder="Enter number" min="1" max="100">
+
+    <br>
+
+    <button onclick="checkGuess()">SUBMIT GUESS</button>
+
+    <button class="red-btn" onclick="newGame()">NEW GAME</button>
+
+    <p id="gameResult" style="margin-top:20px;color:var(--cyan)">
+      Awaiting your input...
+    </p>
+  </div>
+
+</section>
+
+<!-- SETTINGS -->
+<section id="settings" class="screen">
+
+  <div class="panel">
+    <h2>SYSTEM CONFIGURATION</h2>
+
+    <div class="setting-row">
+      <span>Interface sound</span>
+      <button id="soundBtn" onclick="toggleSound()">OFF</button>
+    </div>
+
+    <div class="setting-row">
+      <span>System animations</span>
+      <button id="animationBtn" onclick="toggleAnimation()">ON</button>
+    </div>
+
+    <div class="setting-row">
+      <span>System version</span>
+      <span style="color:var(--cyan)">1.0.0</span>
+    </div>
+
+  </div>
+
+  <div class="panel">
+    <h2>ABOUT NEXUS</h2>
+    <p style="color:#aab6c8;line-height:1.8">
+      NEXUS is a personal digital command center.
+      Built for exploration, creativity and learning.
+    </p>
+  </div>
+
+</section>
+
+</main>
+
+<footer>
+  NEXUS SYSTEMS © 2026 | DESIGNED FOR EXPLORATION
+</footer>
+
+<nav class="bottom">
+
+  <button class="nav-btn active" onclick="navigate('home',this)">
+    <span class="nav-icon">⌂</span>Home
+  </button>
+
+  <button class="nav-btn" onclick="navigate('chat',this)">
+    <span class="nav-icon">⌘</span>AI Chat
+  </button>
+
+  <button class="nav-btn" onclick="navigate('games',this)">
+    <span class="nav-icon">♜</span>Games
+  </button>
+
+  <button class="nav-btn" onclick="navigate('settings',this)">
+    <span class="nav-icon">⚙</span>Settings
+  </button>
+
+</nav>
+
+<script>
+
+function navigate(id, btn) {
+  document.querySelectorAll('.screen').forEach(screen => {
+    screen.classList.remove('active');
+  });
+
+  document.getElementById(id).classList.add('active');
+
+  document.querySelectorAll('.nav-btn').forEach(button => {
+    button.classList.remove('active');
+  });
+
+  if(btn) {
+    btn.classList.add('active');
+  } else {
+    document.querySelectorAll('.nav-btn').forEach(button => {
+      if(button.getAttribute('onclick').includes(id)) {
+        button.classList.add('active');
+      }
+    });
+  }
+
+  window.scrollTo(0, 0);
+}
+
+// CLOCK
+
+function updateClock() {
+  const now = new Date();
+
+  document.getElementById('clock').textContent =
+    now.toLocaleTimeString();
+
+  document.getElementById('date').textContent =
+    now.toDateString();
+}
+
+setInterval(updateClock, 1000);
+updateClock();
+
+// CHAT
+
+function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const chat = document.getElementById('chatbox');
+
+  const text = input.value.trim();
+
+  if(!text) return;
+
+  const userMessage = document.createElement('div');
+  userMessage.className = 'message user';
+  userMessage.textContent = 'YOU: ' + text;
+
+  chat.appendChild(userMessage);
+  input.value = '';
+
+  const typing = document.createElement('div');
+  typing.className = 'message bot';
+  typing.textContent = 'NEXUS is processing...';
+
+  chat.appendChild(typing);
+  chat.scrollTop = chat.scrollHeight;
+
+  setTimeout(() => {
+    typing.textContent = 'NEXUS: ' + getReply(text);
+    chat.scrollTop = chat.scrollHeight;
+    playSound();
+  }, 900);
+}
+
+function getReply(text) {
+  const message = text.toLowerCase();
+
+  if(message.includes('hello') || message.includes('hi'))
+    return 'Greetings, operator. All systems are operational.';
+
+  if(message.includes('your name'))
+    return 'I am NEXUS, your digital assistant.';
+
+  if(message.includes('time'))
+    return 'Current time: ' + new Date().toLocaleTimeString();
+
+  if(message.includes('date'))
+    return 'Today is ' + new Date().toDateString();
+
+  if(message.includes('joke'))
+    return 'Why do programmers hate nature? Too many bugs.';
+
+  if(message.includes('who made you'))
+    return 'I was created as a browser-based virtual assistant.';
+
+  if(message.includes('help'))
+    return 'Try asking me about the time, date, jokes or my identity.';
+
+  if(message.includes('status'))
+    return 'All systems are online. No issues detected.';
+
+  if(message.includes('bye'))
+    return 'Until next time, operator.';
+
+  const replies = [
+    'Interesting. Tell me more.',
+    'Processing your request...',
+    'That is something worth exploring.',
+    'My systems are listening, operator.',
+    'Could you explain that differently?',
+    'I am ready for your next command.'
+  ];
+
+  return replies[Math.floor(Math.random() * replies.length)];
+}
+
+// NUMBER GAME
+
+let secretNumber = Math.floor(Math.random() * 100) + 1;
+let attempts = 0;
+
+function checkGuess() {
+  const input = document.getElementById('guessInput');
+  const result = document.getElementById('gameResult');
+
+  const guess = Number(input.value);
+
+  if(!Number.isInteger(guess) || guess < 1 || guess > 100) {
+    result.textContent = 'Enter a number from 1 to 100.';
+    return;
+  }
+
+  attempts++;
+
+  if(guess === secretNumber) {
+    result.textContent =
+      'ACCESS GRANTED! You won in ' + attempts + ' attempts.';
+  } else if(guess < secretNumber) {
+    result.textContent = 'Too low. Try again!';
+  } else {
+    result.textContent = 'Too high. Try again!';
+  }
+
+  input.value = '';
+}
+
+function newGame() {
+  secretNumber = Math.floor(Math.random() * 100) + 1;
+  attempts = 0;
+
+  document.getElementById('gameResult').textContent =
+    'New mission started. Good luck!';
+
+  document.getElementById('guessInput').value = '';
+}
+
+// SETTINGS
+
+let soundEnabled = false;
+let animationsEnabled = true;
+
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+
+  document.getElementById('soundBtn').textContent =
+    soundEnabled ? 'ON' : 'OFF';
+}
+
+function toggleAnimation() {
+  animationsEnabled = !animationsEnabled;
+
+  document.getElementById('animationBtn').textContent =
+    animationsEnabled ? 'ON' : 'OFF';
+
+  document.body.style.setProperty(
+    '--animation-state',
+    animationsEnabled ? 'running' : 'paused'
+  );
+
+  document.querySelectorAll('.core').forEach(core => {
+    core.style.animationPlayState =
+      animationsEnabled ? 'running' : 'paused';
+  });
+}
+
+// SIMPLE INTERFACE SOUND
+
+function playSound() {
+  if(!soundEnabled) return;
+
+  try {
+    const audio = new AudioContext();
+    const oscillator = audio.createOscillator();
+    const gain = audio.createGain();
+
+    oscillator.connect(gain);
+    gain.connect(audio.destination);
+
+    oscillator.frequency.value = 600;
+    gain.gain.value = 0.04;
+
+    oscillator.start();
+    oscillator.stop(audio.currentTime + 0.12);
+  } catch(error) {
+    console.log('Audio unavailable');
+  }
+}
+
+</script>
+
+</body>
+</html>
